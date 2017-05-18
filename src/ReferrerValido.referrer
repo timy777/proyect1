@@ -1,0 +1,6 @@
+# en este archivo se encuentra todos los referrer válido
+# si se deja en blanco esta lista entonces no se restringe.
+# La aplicación validará que todas las solicitudes empiezen con alguna de estas líneas
+# Por ejemplo http://127.0.0.1:6789/Misistema  o  https://127.0.0.1:6789/Misistema
+# caso contrario devolverá error
+# Pero, si no se configura algún referer (inicio de URL), entonces habrá ninguna restricción. 

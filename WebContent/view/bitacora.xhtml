@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="./../resources/templates/simple.xhtml">
+	<ui:define name="content">
+
+		<h:form id="frmComandos">
+
+			<div class="visible-lg">
+				<h1>BITACORA</h1>
+			</div>
+			<div class="hidden-lg">
+				<h4>BITACORA</h4>
+			</div>
+
+			<h:commandLink>
+				<h:graphicImage url="/resources/icons/excel.png" width="24" />
+				<p:dataExporter type="xls" target=":mainForm:tblDatos" fileName="Bitacora_sistema" postProcessor="#{bitacoraBean.postProcessXLS}" />
+				Exporta a excel
+			</h:commandLink>
+
+		</h:form>
+
+		<h:form id="mainForm">
+
+			<p:dataTable id="tblDatos" var="row" value="#{bitacoraBean.listBitacora}" paginator="true" rows="15" lazy="true"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="15,25,50,100">
+
+				<p:column headerText="FECHA" filterBy="#{row.fecha}" filterMatchMode="contains">
+					<h:outputText value="#{row.fecha}">
+						<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT-4" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="ACCIONES" filterBy="#{row.accion}" filterMatchMode="contains">
+					<h:outputText value="#{row.accion}" />
+				</p:column>
+
+				<p:column headerText="FORMULARIO" filterBy="#{row.formulario}" filterMatchMode="contains">
+					<h:outputText value="#{row.formulario}" />
+				</p:column>
+
+				<p:column headerText="USUARIO / C.I." filterBy="#{row.usuario}" filterMatchMode="contains">
+					<h:outputText value="#{row.usuario}" />
+				</p:column>
+
+				<p:column headerText="IP" filterBy="#{row.direccionIp}" filterMatchMode="contains" styleClass="visible-lg">
+					<h:outputText value="#{row.direccionIp}" />
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

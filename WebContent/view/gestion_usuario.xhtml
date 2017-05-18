@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="./../resources/templates/simple.xhtml">
+
+	<ui:define name="content">
+
+		<p:dialog id="dlgNuevoEditarId" widgetVar="dlgNuevoEditar" closeOnEscape="false" header="Nuevo/editar Usuario" modal="true" resizable="false"
+			appendTo="@(body)" visible="#{roleUserForm.visibleNuevoEditar}" closable="false">
+
+			<h:form id="frmDatos">
+
+				<p:messages showDetail="true" showSummary="false" autoUpdate="true" closable="true" />
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="itUsuarioId" rendered="#{roleUserForm.edit}" value="ID:" />
+					<p:outputLabel id="itUsuarioId" rendered="#{roleUserForm.edit}" value="#{roleUserForm.user.usuarioId}" />
+
+					<p:outputLabel for="itUsuario" value="Usuario:" />
+					<p:inputText id="itUsuario" label="Usuario" size="30" maxlength="30" value="#{roleUserForm.user.login}"
+						validatorMessage="#{login.mensajeValidacionGeneral}">
+						<f:validateRegex pattern="#{login.expresionRegularGeneral}" />
+					</p:inputText>
+
+					<p:outputLabel for="somRol" value="Rol:" />
+					<p:selectOneMenu id="somRol" value="#{roleUserForm.select}" onselect="#{roleUserForm.select}" style="width: 177px;">
+						<f:selectItems value="#{roleUserForm.selectItems}" />
+					</p:selectOneMenu>
+
+					<p:commandButton id="btnGuardar" value="Guardar" icon="ui-icon-disk" actionListener="#{roleUserForm.saveUser()}"
+						update=":dlgNuevoEditarId :frmDatos :frmDetalle" />
+
+					<p:commandButton id="btnSalir" value="Salir" process="@this" icon="ui-icon-close" actionListener="#{roleUserForm.setVisibleNuevoEditar(false)}"
+						update=":dlgNuevoEditarId" />
+
+				</h:panelGrid>
+
+			</h:form>
+			<br />
+		</p:dialog>
+
+		<h:form id="frmDetalle">
+			<p:confirmDialog global="true">
+				<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+
+			<div class="visible-lg">
+				<h1>GESTIÓN DE USUARIOS</h1>
+			</div>
+			<div class="hidden-lg">
+				<h4>GESTIÓN DE USUARIOS</h4>
+			</div>
+
+			<p:commandButton value="Nuevo" icon="ui-icon-document" rendered="#{roleUserForm.isAuthorized(privilegio.ACCION_CREAR)}" style="width:140px;"
+				actionListener="#{roleUserForm.newUser()}" update=":dlgNuevoEditarId :frmDatos" />
+
+			<p:commandButton value="Editar" icon="ui-icon-pencil" rendered="#{roleUserForm.isAuthorized(privilegio.ACCION_MODIFICAR)}" style="width:140px;"
+				actionListener="#{roleUserForm.editRoleUser()}" update=":dlgNuevoEditarId :frmDatos" />
+
+			<p:commandButton value="Eliminar" icon="ui-icon-trash" style="width:140px;" rendered="#{roleUserForm.isAuthorized(privilegio.ACCION_ELIMINAR)}"
+				actionListener="#{roleUserForm.deleteRoleUser()}" update=":frmDetalle">
+				<p:confirm header="Confirmación" message="¿Esta seguro que desea eliminar este registro?" icon="ui-icon-alert" />
+			</p:commandButton>
+			<br />
+			<p:dataTable var="row" value="#{roleUserForm.listUser}" paginator="true" rows="10" first="0"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" selectionMode="single" selection="#{roleUserForm.user}" rowKey="#{row.usuarioId}">
+
+				<f:facet name="header">LISTA DE USUARIOS</f:facet>
+
+				<p:column headerText="ACCIONES" style="text-align: center;" width="100" styleClass="visible-lg">
+
+					<p:commandLink id="editLink" title="Editar Usuario"
+						rendered="#{(row.login != 'admin') and (roleUserForm.isAuthorized(privilegio.ACCION_MODIFICAR))}"
+						actionListener="#{roleUserForm.editRoleUser(row)}" update=":dlgNuevoEditarId :frmDatos">
+						<h:graphicImage alt="Modificar" url="/resources/icons/edit.png" styleClass="icon" />
+					</p:commandLink>
+
+					<p:commandLink id="deleteLink" title="Eliminar Usuario"
+						rendered="#{(row.login != 'admin') and (roleUserForm.isAuthorized(privilegio.ACCION_ELIMINAR))}"
+						actionListener="#{roleUserForm.deleteRoleUser(row)}" update=":frmDetalle">
+						<h:graphicImage alt="Eliminar" url="/resources/icons/delete.png" />
+						<p:confirm header="Confirmación" message="¿Esta seguro que desea eliminar este registro?" icon="ui-icon-alert" />
+					</p:commandLink>
+
+				</p:column>
+
+				<p:column headerText="USUARIO" filterBy="#{row.login}" filterMatchMode="contains">
+					<h:outputText value="#{row.login}" />
+				</p:column>
+
+				<p:column headerText="NOMBRE" filterBy="#{row.nombre}" filterMatchMode="contains">
+					<h:outputText value="#{row.nombre}" />
+				</p:column>
+
+				<p:column headerText="ROL" filterBy="#{row.muRol.nombre}" filterMatchMode="contains" style="#{roleUserForm.getColor(row.muRol.estado)}">
+					<h:outputText value="#{row.muRol.nombre}" />
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

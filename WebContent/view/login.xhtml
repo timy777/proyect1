@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="./../resources/templates/template_login.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="formLogin" enctype="application/x-www-form-urlencoded">
+
+			<div class="container">
+
+				<br />
+
+				<div class="row">
+					<div class="col-lg-push-2 col-lg-8">
+						<p:messages id="messages" showSummary="false" showDetail="true" autoUpdate="true" closable="true" />
+					</div>
+				</div>
+
+				<div class="row">
+
+					<div class="col-xs-12 col-sm-10 col-sm-push-1 col-md-8 col-md-push-2 col-lg-6 col-lg-push-3 well">
+
+						<h2 class="text-center">
+							<strong>#{login.tituloAplicacion}</strong>
+						</h2>
+
+						<h4 class="text-center">
+							<strong>LOG-IN</strong>
+						</h4>
+
+						<div class="col-sm-3 col-md-3 col-lg-3" align="center">
+							<h:graphicImage library="img" name="usuario.png" alt="usuario" styleClass="img-responsive" width="160" height="140" />
+						</div>
+
+						<div class="form-group col-sm-9 col-md-9 col-lg-9">
+							<div class="col-sm-2 col-md-2 col-lg-3">
+								<h:outputText value="Usuario: " styleClass="control-label" />
+							</div>
+							<div class="col-sm-10 col-md-10 col-lg-9">
+								<h:inputText id="usernameId" value="#{login.userId}" required="true" label="Usuario" requiredMessage="Campo 'usuario' es requerido"
+									maxlength="20" size="20" autocomplete="off" styleClass="form-control" validatorMessage="#{login.mensajeValidacionUsuario}">
+									<f:validateRegex pattern="#{login.expresionRegularUsuario}" />
+								</h:inputText>
+							</div>
+						</div>
+
+						<div class="form-group col-sm-9 col-md-9 col-lg-9">
+							<div class="col-sm-2 col-md-2 col-lg-3">
+								<h:outputText value="Contraseña: " styleClass="control-label" />
+							</div>
+							<div class="col-sm-10 col-md-10 col-lg-9">
+								<h:inputSecret id="passwordId" value="#{login.password}" required="true" label="Password" autocomplete="off" maxlength="50" size="20"
+									requiredMessage="Campo 'password' es requerido" styleClass="form-control" validatorMessage="#{login.mensajeValidacionPassword}">
+									<!-- 								<f:validateRegex pattern="#{login.expresionRegularPassword}" /> -->
+								</h:inputSecret>
+							</div>
+						</div>
+
+						<div class="form-group col-sm-9 col-md-9 col-lg-12" align="center">
+							<h:commandButton id="comanLogin" action="#{login.verifyLogin}" onclick="encryptPassword();" value="LOGIN" type="submit"
+								styleClass="btn btn-info" />
+						</div>
+
+						<div class="col-sm-9 col-md-9 col-lg-12">
+							<h5 class="text-center">#{login.piePagina}</h5>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+

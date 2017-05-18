@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="./../resources/templates/simple.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="frmDetalle">
+
+			<div class="visible-lg">
+				<h1>PARÁMETROS DEL SISTEMA</h1>
+			</div>
+			<div class="hidden-lg">
+				<h4>PARÁMETROS DEL SISTEMA</h4>
+			</div>
+
+			<br />
+			<p:selectOneMenu style="width:250px" value="#{parametroForm.tipoParametroId}">
+				<f:selectItem itemLabel="Seleccione un tipo" itemValue="0" />
+				<f:selectItems value="#{parametroForm.lstTipoParametro}" var="tipoP" itemLabel="#{tipoP.nombre}" itemValue="#{tipoP.muTipoParametroId}" />
+				<p:ajax event="change" listener="#{parametroForm.cargarParametros()}" update="tblparametros" />
+			</p:selectOneMenu>
+			<br />
+			<br />
+			<p:dataTable id="tblparametros" var="row" value="#{parametroForm.listParms}" paginator="true" rows="15"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15,30">
+
+				<f:facet name="header">LISTA DE PARAMETROS</f:facet>
+
+				<p:column headerText="ACCIONES" style="text-align: center;" width="10%" styleClass="visible-lg">
+					<p:commandButton id="editLink" value="" title="Editar Parametro"
+						style="height:25px; width:24px; border:0px none; background:transparent  url('../resources/icons/edit.png;');"
+						rendered="#{parametroForm.isAuthorized(privilegio.ACCION_MODIFICAR)}" actionListener="#{parametroForm.editarParametro(row.parametroId)}"
+						oncomplete="PF('dlg').show();" update=":formPanel">
+					</p:commandButton>
+				</p:column>
+
+				<p:column headerText="NOMBRE" filterBy="#{row.nombre}" filterMatchMode="contains">
+					<h:outputText value="#{row.nombre}" />
+				</p:column>
+
+				<p:column headerText="VALOR">
+					<h:outputText value="#{row.valorCadena}" rendered="#{(row.tipo == 1) || (row.tipo == 5)}" />
+					<h:outputText value="#{row.valorFecha}" rendered="#{row.tipo == 2}" />
+					<h:outputText value="#{row.valorNumerico}" rendered="#{row.tipo == 3}" />
+					<h:outputText value="#{row.valorBooleano}" rendered="#{row.tipo == 4}" />
+				</p:column>
+				<p:column headerText="DESCRIPCION">
+					<h:outputText value="#{row.descripcionCampo}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+
+		<p:dialog widgetVar="dlg" modal="true" resizable="false" showEffect="fade" appendTo="@(body)" header="Edicion Parametro">
+			<h:form id="formPanel">
+				<p:growl id="growl" showDetail="true" sticky="true" autoUpdate="true" />
+				<h1>#{parametroForm.parametro.nombre}</h1>
+				<h:panelGrid columns="2" cellspacing="5" cellpadding="4">
+					<h:outputText value="Valor: " />
+					<p:inputTextarea id="idValcad" autoResize="false" cols="60" value="#{parametroForm.parametro.valorCadena}" rows="5" maxlength="255" size="200"
+						rendered="#{parametroForm.parametro.tipo ==1 }"></p:inputTextarea>
+					<p:calendar id="idValFecha" label="Valor" size="50" value="#{parametroForm.parametro.valorFecha}" showOn="button"
+						rendered="#{parametroForm.parametro.tipo ==2 }" pattern="dd-MM-yyyy HH:mm:ss" />
+					<p:spinner id="idValNumeric" label="Valor" size="50" value="#{parametroForm.parametro.valorNumerico}"
+						rendered="#{parametroForm.parametro.tipo == 3}" />
+					<p:inputSwitch id="idValBool" onLabel="true" offLabel="false" label="Valor" value="#{parametroForm.parametro.valorBooleano}"
+						rendered="#{parametroForm.parametro.tipo == 4}" />
+					<p:colorPicker id="idValCol" lable="Valor" value="#{parametroForm.parametro.valorCadena}" rendered="#{parametroForm.parametro.tipo == 5}"
+						mode="inline" />
+				</h:panelGrid>
+				<!-- >>>>>>>A continuación he copiado y pegado lo necesario para el parámetro de tipo lista>>>>>>> -->
+				<h:panelGrid id="parametroListado" rendered="#{parametroForm.parametro.tipo >= 6}" columns="1" cellspacing="5" cellpadding="4" width="400">
+					<h:panelGrid id="panelOption" columns="1" cellspacing="5" cellpadding="4">
+					<p:commandButton value="Añadir" icon="ui-icon-document"
+                        actionListener="#{parametroForm.anadirElemento()}"
+                        update=":formPanel:parametroListado"></p:commandButton>	
+                         
+					</h:panelGrid>
+                    
+                        
+		                <p:dataTable id="dtParametroListado" var="row" draggableRows="true"
+		                    value="#{parametroForm.listadoValoresParameterForm.valores}" 
+		                    editable="true"
+		                    editMode="cell" 
+		                    widgetVar="dtRolTipoparametro" 
+		                    selection="#{parametroForm.parametroSeleccionado}" 
+		                    rowKey="#{row.value}" 
+		                    selectionMode="single">
+		                    
+		               	<p:ajax event="cellEdit" listener="#{parametroForm.onCellEdit}" update="dtParametroListado" inmediate="true" process="@this"/>
+						
+						<p:column headerText="OPCION" width="16%">
+							<p:commandLink id="deleteLink" title="Eliminar parametro"
+								actionListener="#{parametroForm.quitarElemento(row)}"
+								update=":formPanel:dtParametroListado" ajax="true" process="@this"
+								>
+								<h:graphicImage alt="Eliminar" url="/resources/icons/delete.png" />
+							</p:commandLink>
+						</p:column>
+						
+		                 
+		                    <p:column headerText="VALOR" width="42%">
+		                     <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText  value="#{row.value}" />
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText  size="30"
+                                            maxlength="50" value="#{row.value}">
+                                        </p:inputText>
+                                    </f:facet>
+                              </p:cellEditor>
+		                    </p:column>
+		
+		                    <p:column headerText="ETIQUETA" width="42%">
+		                        <p:cellEditor>
+		                            <f:facet name="output">
+		                                <h:outputText  value="#{row.label}" />
+		                            </f:facet>
+		                            <f:facet name="input">
+					                    <p:inputText  size="30"
+					                        maxlength="50" value="#{row.label}">
+					                    </p:inputText>
+		                            </f:facet>
+		                        </p:cellEditor>
+		                    </p:column>
+		            
+		                </p:dataTable>
+                                    			
+				
+				</h:panelGrid>
+				<!-- <<<<<<<<<A continuación he copiado y pegado lo necesario para el parámetro de tipo lista<<<<<<<<< -->
+				<h:inputHidden id="completar" value="#{parametroForm.exit}" />
+				<h:panelGrid columns="2" cellpadding="2" cellspacing="2">
+					<p:commandButton value="Guardar" actionListener="#{parametroForm.saveParametro()}" icon="ui-icon-disk"
+						oncomplete="var sw=FinalizarBO(); if(sw){PF('dlg').hide(); return false;}" update=":frmDetalle:tblparametros, :formPanel"></p:commandButton>
+					<p:commandButton value="Cancelar" icon="ui-icon-document" oncomplete="PF('dlg').hide();" update=":frmDetalle:tblparametros, :formPanel"></p:commandButton>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

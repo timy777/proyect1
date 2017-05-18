@@ -1,0 +1,15 @@
+﻿# Las líneas en este archivo que no contienen el separador serán ignorado
+# Existen 2 separadores los cuales se explican a continuación:
+#      barra h barra   .- Es el separador para cualquier protocolo
+#      barra s barra   .- Es el separador para encabezados que se aplica sólo para peticiones https
+# No ponga el separador en el comentario, porque la aplicación lo tomaría como cabecera
+x-ua-compatible |h| IE=8
+X-Frame-Options |h| deny
+Cache-Control |h| no-cache, no-store, must-revalidate
+Pragma |h| no-cache
+Strict-Transport-Security |s| max-age=16070400; includeSubDomains; preload
+X-Content-Type-Options |h| nosniff
+X-XSS-Protection |h| 1; mode=block
+Content-Security-Policy |h| default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'none'; frame-src 'self'; child-src 'self'; font-src 'self' data:; connect-src 'self';
+X-Content-Security-Policy |h| default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'none'; frame-src 'self'; child-src 'self'; font-src 'self' data:; connect-src 'self';
+X-Webkit-CSP |h| default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'none'; frame-src 'self'; child-src 'self'; font-src 'self' data:; connect-src 'self';

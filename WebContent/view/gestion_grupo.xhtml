@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="./../resources/templates/simple.xhtml">
+	<ui:define name="content">
+
+		<p:dialog id="dlgNuevoEditarId" widgetVar="dlgNuevoEditar" closeOnEscape="false" header="Nuevo/editar Grupo" modal="true" resizable="false"
+			appendTo="@(body)" visible="#{muGrupoBean.visibleNuevoEditar}" closable="false">
+			<h:form id="frmDatos">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="itGrupoId" rendered="#{muGrupoBean.edit}" value="Id grupo:" />
+					<p:inputText id="itGrupoId" rendered="#{muGrupoBean.edit}" readonly="true" size="30" maxlength="30" value="#{muGrupoBean.group.grupoId}" />
+
+					<p:outputLabel for="itNombre" value="Nombre:" />
+					<p:inputText id="itNombre" size="30" maxlength="30" value="#{muGrupoBean.group.nombre}" label="Nombre"
+						validatorMessage="#{login.mensajeValidacionGeneral}">
+						<f:validateRegex pattern="#{login.expresionRegularGeneral}" />
+					</p:inputText>
+
+					<p:outputLabel for="itDescripcion" value="Descripción:" />
+					<p:inputText id="itDescripcion" size="30" maxlength="30" value="#{muGrupoBean.group.detalle}" label="Descripción">
+					</p:inputText>
+
+					<p:outputLabel for="somRol" value="Rol:" />
+					<p:selectOneMenu id="somRol" value="#{muGrupoBean.select}" onselect="#{muGrupoBean.select}" style="width:177px;">
+						<f:selectItems value="#{muGrupoBean.selectItems}" />
+					</p:selectOneMenu>
+
+					<p:commandButton id="btnGuardar" value="Guardar" actionListener="#{muGrupoBean.saveGroup()}" update=":dlgNuevoEditarId :frmDatos :frmDetalle" />
+
+					<p:commandButton id="btnSalir" value="Salir" process="@this" actionListener="#{muGrupoBean.setVisibleNuevoEditar(false)}"
+						update=":dlgNuevoEditarId" />
+
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+		<br />
+
+		<h:form id="frmDetalle">
+			<p:confirmDialog global="true">
+				<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+
+			<div class="visible-lg">
+				<h1>GESTIÓN DE GRUPOS</h1>
+			</div>
+			<div class="hidden-lg">
+				<h4>GESTIÓN DE GRUPOS</h4>
+			</div>
+
+			<p:commandButton value="Nuevo" icon="ui-icon-document" rendered="#{muGrupoBean.isAuthorized(privilegio.ACCION_CREAR)}" style="width:140px;"
+				actionListener="#{muGrupoBean.newGroup()}" update=":dlgNuevoEditarId :frmDatos" />
+
+			<p:commandButton value="Editar" icon="ui-icon-pencil" rendered="#{muGrupoBean.isAuthorized(privilegio.ACCION_MODIFICAR)}" style="width:140px;"
+				actionListener="#{muGrupoBean.editRoleGroup()}" update=":dlgNuevoEditarId :frmDatos" />
+
+			<p:commandButton value="Eliminar" icon="ui-icon-trash" style="width:140px;" rendered="#{muGrupoBean.isAuthorized(privilegio.ACCION_ELIMINAR)}"
+				actionListener="#{muGrupoBean.deleteRoleGroup()}" update=":frmDetalle">
+				<p:confirm header="Confirmación" message="¿Esta seguro que desea eliminar este registro?" icon="ui-icon-alert" />
+			</p:commandButton>
+			<br />
+			<p:dataTable var="row" value="#{muGrupoBean.listGroup}" paginator="true" rows="10" first="0"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" selectionMode="single" selection="#{muGrupoBean.group}" rowKey="#{row.grupoId}">
+				<f:facet name="header">LISTA DE GRUPOS</f:facet>
+
+				<p:column style="text-align: left;" headerText="ACCIONES" styleClass="visible-lg">
+					<p:commandLink id="editLink" title="Editar Grupo" rendered="#{muGrupoBean.isAuthorized(privilegio.ACCION_MODIFICAR)}"
+						actionListener="#{muGrupoBean.editRoleGroup(row)}" update=":dlgNuevoEditarId :frmDatos">
+						<h:graphicImage id="editImage" alt="Modificar" url="/resources/icons/edit.png" styleClass="icon" />
+					</p:commandLink>
+
+					<p:commandLink id="deleteLink" title="Eliminar Grupo" rendered="#{muGrupoBean.isAuthorized(privilegio.ACCION_ELIMINAR)}"
+						actionListener="#{muGrupoBean.deleteRoleGroup(row)}" update=":frmDetalle">
+						<h:graphicImage id="deleteImage" alt="Eliminar" url="/resources/icons/delete.png" styleClass="icon" />
+						<p:confirm header="Confirmación" message="¿Esta seguro que desea eliminar este registro?" icon="ui-icon-alert" />
+					</p:commandLink>
+
+				</p:column>
+
+				<p:column headerText="NOMBRE DE GRUPO" style="text-align: left;" filterBy="#{row.nombre}" filterMatchMode="contains">
+					<h:outputText value="#{row.nombre}" />
+				</p:column>
+
+				<p:column headerText="DESCRIPCIÓN" style="text-align: left;" filterBy="#{row.detalle}" filterMatchMode="contains">
+					<h:outputText value="#{row.detalle}" />
+				</p:column>
+
+				<p:column headerText="ROL" filterBy="#{row.muRol.nombre}" filterMatchMode="contains" style="#{muGrupoBean.getColor(row.muRol.estado)}">
+					<h:outputText value="#{row.muRol.nombre}" />
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

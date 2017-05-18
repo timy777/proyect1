@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+
+<h:head>
+
+<!-- 	<f:facet name="first"> -->
+<!-- 		<meta http-equiv="x-ua-compatible" content="IE=8" /> -->
+<!-- 	</f:facet> -->
+
+<!-- 	<meta http-equiv="content-type" content="text/html; charset=utf-8" /> -->
+<!-- 	<meta name="viewport" content="width=device-width, initial-scale=1" /> -->
+<!-- 	<meta content="private ,no-cache, no-store, must-revalidate" http-equiv="Cache-Control" /> -->
+<!-- 	<meta content="no-cache" http-equiv="Pragma" /> -->
+<!-- 	<meta content="0" http-equiv="Expires" /> -->
+
+	<script type="text/javascript" src="#{request.contextPath}/resources/js/aplication.js"></script>
+	<script type="text/javascript" src="#{request.contextPath}/resources/js/bootstrap.js"></script>
+	<h:outputStylesheet library="css" name="bootstrap.css"></h:outputStylesheet>
+	<h:outputStylesheet library="css" name="bootstrap-theme.css"></h:outputStylesheet>
+	<link href="#{request.contextPath}/resources/css/cssLayoutTV.css" rel="stylesheet" type="text/css" />
+
+	<link rel="shortcut icon" href="#{request.contextPath}/resources/icons/icon.png" type="image/png" />
+
+	<title>#{login.tituloAplicacion}</title>
+
+</h:head>
+
+<body>
+
+
+
+	<p:layout id="layoutPrincipal" fullPage="true" style="background-color: #FFFFFF; border-color: #FFFFFF;">
+
+		<p:layoutUnit position="north" resizable="false" closable="true" collapsible="false" size="87">
+			<nav class="navbar navbar-default">
+			<div class="container-fluid">
+
+				<div class="navbar-header">
+					<a class="navbar-brand visible-sm visible-md visible-lg" href="menu.xhtml"> <img alt="#{login.tituloAplicacion}"
+						src="../resources/img/logoTigo.png" width="90px" class="img-responsive" />
+					</a> <a class="navbar-brand visible-xs" href="menu.xhtml"> <!-- 							<h:graphicImage library="img" name="logoTigo.png" alt="Logo Tigo" /> --> <img
+						alt="#{login.tituloAplicacion}" src="../resources/img/logoTigo.png" width="50px" class="img-responsive" />
+					</a> <a class="navbar-brand visible-xs" href="menu.xhtml"> #{login.tituloAplicacion} </a>
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+					</button>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav" style="border: none;">
+
+						<ui:repeat value="#{login.lMenu}" var="menu">
+							<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+									#{menu.nombre}<span class="caret"></span>
+							</a>
+								<ul class="dropdown-menu">
+									<ui:repeat value="#{menu.lMenu}" var="item">
+										<li><a href="#{item.url}">#{item.nombre}</a></li>
+									</ui:repeat>
+								</ul></li>
+						</ui:repeat>
+												
+						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								Opciones<span class="caret"></span>
+						</a>
+							<ul class="dropdown-menu">
+								<li><a href="#{request.contextPath}/resources/Manual.pdf">Manual</a></li>
+							</ul>
+						</li>
+
+					</ul>
+
+					<p class="navbar-text navbar-right">
+						<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+						<strong>#{login.userId}</strong>
+						<a href="#{request.contextPath}/Logout" class="navbar-link navbar-btn">
+							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+							salir
+						</a>
+					</p>
+
+				</div>
+			</div>
+			</nav>
+
+		</p:layoutUnit>
+
+		<p:layoutUnit id="layoutCenter" position="center" style="background-color: #FFFFFF; border-color: #FFFFFF;">
+
+			<div id="wrap">
+				<div id="content">
+
+					<p:outputPanel ajaxRendered="true">
+						<p:growl id="messages" escape="false" showDetail="true" autoUpdate="true" sticky="true" />
+					</p:outputPanel>
+
+					<div class="nav">
+						<ui:insert name="content">Content</ui:insert>
+					</div>
+
+				</div>
+			</div>
+
+		</p:layoutUnit>
+
+		<p:layoutUnit id="layoutPie" position="south" style="border-color: #BFD3ED; background: #BFD3ED;">
+			<div id="bottom">
+				<div id="footerText">
+					<span>#{login.piePagina}</span>
+				</div>
+			</div>
+		</p:layoutUnit>
+
+	</p:layout>
+
+</body>
+
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="./../resources/templates/simple.xhtml">
+	<ui:define name="content">
+
+		<h:form id="frmDetalle">
+			<p:confirmDialog global="true">
+				<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+
+			<div class="visible-lg">
+				<h1>GESTIÓN DE VISTAS</h1>
+			</div>
+			<div class="hidden-lg">
+				<h4>GESTIÓN DE VISTAS</h4>
+			</div>
+
+			<p:commandButton value="Nuevo" icon="ui-icon-document" rendered="#{muFormularioBean.isAuthorized(privilegio.ACCION_CREAR)}" style="width:140px;"
+				actionListener="#{muFormularioBean.newFormulario()}" update=":dlgNuevoEditarId :frmDatos" />
+
+			<p:commandButton value="Editar" icon="ui-icon-pencil" rendered="#{muFormularioBean.isAuthorized(privilegio.ACCION_MODIFICAR)}" style="width:140px;"
+				actionListener="#{muFormularioBean.editFormulario()}" update=":dlgNuevoEditarId :frmDatos" />
+
+			<p:commandButton value="Eliminar" icon="ui-icon-trash" style="width:140px;" rendered="#{muFormularioBean.isAuthorized(privilegio.ACCION_ELIMINAR)}"
+				actionListener="#{muFormularioBean.deleteInterfaz()}" update=":frmDetalle">
+				<p:confirm header="Confirmación" message="¿Esta seguro que desea eliminar este registro?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton value="Configurar Secuencia" icon="ui-icon-gear" style="width:240px;"
+				rendered="#{muFormularioBean.isAuthorized(privilegio.ACCION_CONFIGURAR)}" actionListener="#{muFormularioBean.setpUpModulosOrder()}"
+				update=":dlgSetUpOrder :frmPaginasOrder">
+			</p:commandButton>
+
+			<br />
+
+			<p:dataTable var="row" value="#{muFormularioBean.listPages}" paginator="true" rows="10" first="0"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" selectionMode="single" selection="#{muFormularioBean.formulario}" rowKey="#{row.id}">
+				<f:facet name="header">LISTA DE INTERFACES WEB</f:facet>
+
+				<p:column style="text-align: left;" headerText="ACCIONES" width="10%" styleClass="visible-lg">
+					<p:commandLink id="editLink" rendered="#{muFormularioBean.isAuthorized(privilegio.ACCION_MODIFICAR)}"
+						actionListener="#{muFormularioBean.editFormulario(row)}" update=":dlgNuevoEditarId :frmDatos">
+						<h:graphicImage id="editImage" alt="Modificar" url="/resources/icons/edit.png" styleClass="icon" />
+					</p:commandLink>
+
+					<p:commandLink id="deleteLink" rendered="#{muFormularioBean.isAuthorized(privilegio.ACCION_ELIMINAR)}"
+						actionListener="#{muFormularioBean.deleteInterfaz(row)}" update=":frmDetalle">
+						<h:graphicImage id="deleteImage" alt="Eliminar" url="/resources/icons/delete.png" styleClass="icon" />
+						<p:confirm header="Confirmación" message="¿Esta seguro que desea eliminar este registro?" icon="ui-icon-alert" />
+					</p:commandLink>
+				</p:column>
+
+				<p:column style="text-align: left;" width="40%" filterBy="#{row.formularioMenu.nombre}" filterMatchMode="contains" headerText="NOMBRE MODULO">
+					<h:outputText value="#{row.formularioMenu.nombre}" />
+				</p:column>
+
+				<p:column style="text-align: left;" filterBy="#{row.nombre}" width="25%" filterMatchMode="contains" headerText="NOMBRE VISTA">
+					<h:outputText value="#{row.nombre}" />
+				</p:column>
+
+				<p:column filterBy="#{row.url}" filterMatchMode="contains" width="25%" headerText="PATH">
+					<h:outputText value="#{row.url}" />
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog id="dlgNuevoEditarId" widgetVar="dlgNuevoEditar" closeOnEscape="false" header="Nuevo/editar Vista" modal="true" resizable="false"
+			appendTo="@(body)" visible="#{muFormularioBean.visibleNuevoEditar}" closable="false">
+			<h:form id="frmDatos">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="itId" rendered="#{muFormularioBean.edit}" value="Id Formulario:" />
+					<p:inputText id="itId" rendered="#{muFormularioBean.edit}" readonly="true" size="35" maxlength="35" value="#{muFormularioBean.formulario.id}" />
+
+					<p:outputLabel for="itNombre" value="Nombre:" />
+					<p:inputText id="itNombre" size="30" maxlength="30" value="#{muFormularioBean.formulario.nombre}" label="Nombre"
+						validatorMessage="#{login.mensajeValidacionGeneral}">
+						<f:validateRegex pattern="#{login.expresionRegularGeneral}" />
+					</p:inputText>
+
+					<p:outputLabel value="Tipo:" />
+					<p:selectOneRadio id="selectTpVst" value="#{muFormularioBean.tipoVista}">
+						<f:selectItem itemLabel="MODULO" itemValue="true" />
+						<f:selectItem itemLabel="VISTA" itemValue="false" />
+						<p:ajax event="change" update="dts" process="@this" />
+					</p:selectOneRadio>
+				</h:panelGrid>
+				<p:outputPanel id="dts">
+					<p:panel id="idPnlTipoV" rendered="#{!muFormularioBean.tipoVista}">
+						<f:facet name="header">
+							Informacion de la Vista
+						</f:facet>
+
+						<h:panelGrid columns="2">
+							<p:outputLabel for="selectMod" value="Modulo:" />
+							<p:selectOneMenu id="selectMod" value="#{muFormularioBean.idFormMod}" onselect="#{muFormularioBean.idFormMod}">
+								<f:selectItems var="modulo" value="#{muFormularioBean.listMod}" itemValue="#{modulo.id}" itemLabel="#{modulo.nombre}" />
+							</p:selectOneMenu>
+
+							<p:outputLabel for="itPath" value="Path/url:" />
+							<p:inputText id="itPath" size="30" maxlength="30" value="#{muFormularioBean.formulario.url}" label="Descripción">
+							</p:inputText>
+
+							<p:outputLabel value="Acciones:" />
+							<p:selectManyCheckbox id="chexAcciones" value="#{muFormularioBean.listAccionsSelect}" layout="grid" columns="3">
+								<f:selectItems value="#{muFormularioBean.listAcciones}" var="accion" itemLabel="#{accion.nombre}" itemValue="#{accion.id}" />
+							</p:selectManyCheckbox>
+
+						</h:panelGrid>
+
+					</p:panel>
+				</p:outputPanel>
+				<h:panelGrid columns="2" cellpadding="3" cellspacing="3">
+					<p:commandButton id="btnGuardar" value="Guardar" actionListener="#{muFormularioBean.saveFormulario()}"
+						update=":dlgNuevoEditarId :frmDatos :frmDetalle" />
+
+					<p:commandButton id="btnSalir" value="Salir" process="@this" actionListener="#{muFormularioBean.setVisibleNuevoEditar(false)}"
+						update=":dlgNuevoEditarId" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<br />
+
+		<p:dialog id="dlgSetUpOrder" widgetVar="dlgSetUpOrder" closeOnEscape="false" header="Establecer Oreden de Paginas por Modulo" modal="true"
+			resizable="false" appendTo="@(body)" visible="#{muFormularioBean.setUpOrder}" closable="false">
+			<h:form id="frmPaginasOrder">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Modulo:" />
+					<p:selectOneMenu id="selectModSetUp" value="#{muFormularioBean.idFormMod}" onselect="#{muFormularioBean.idFormMod}">
+						<f:selectItems var="modulo" value="#{muFormularioBean.listMod}" itemValue="#{modulo.id}" itemLabel="#{modulo.nombre}" />
+						<p:ajax event="change" update="dtsPages" process="@this" listener="#{muFormularioBean.cargarListaPagesForMod()}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				<p:outputPanel id="dtsPages">
+					<p:panel id="idPnlOrder">
+						<f:facet name="header">
+							Paginas Web de: #{muFormularioBean.nombreMod}
+						</f:facet>
+
+						<p:orderList value="#{muFormularioBean.listPagesOrder}" var="pagina" itemValue="#{pagina}" itemLabel="#{pagina}" controlsLocation="left">
+						</p:orderList>
+					</p:panel>
+				</p:outputPanel>
+				<h:panelGrid columns="2" cellpadding="3" cellspacing="3">
+					<p:commandButton id="btnGuardarOrder" value="Guardar" actionListener="#{muFormularioBean.saveOrderPages()}" update=":dlgSetUpOrder :frmDetalle" />
+
+					<p:commandButton id="btnSalirOrder" value="Salir" process="@this" actionListener="#{muFormularioBean.setSetUpOrder(false)}"
+						update=":dlgSetUpOrder" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+</ui:composition>

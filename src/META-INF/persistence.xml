@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+	<persistence-unit name="pUnit_dbSystem" transaction-type="JTA">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>MU22</jta-data-source>
+
+		<class>micrium.user.model.MuBitacora</class>
+		<class>micrium.user.model.MuFormulario</class>
+		<class>micrium.user.model.MuGrupoAd</class>
+		<class>micrium.user.model.MuRolFormularioPK</class>
+		<class>micrium.user.model.MuRolFormulario</class>
+		<class>micrium.user.model.MuRol</class>
+		<class>micrium.user.model.MuUsuario</class>
+		<class>micrium.user.model.MuParametro</class>
+		<class>micrium.user.model.MuAccion</class>
+		<class>micrium.user.model.MuTipoParametro</class>
+		<class>micrium.user.model.MuRolTipoparametro</class>
+		<class>micrium.user.model.MuRolTipoparametroPK</class>
+		<class>micrium.user.model.MuPassword</class>
+		<class>micrium.user.model.MuUsuarioLocal</class>
+
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+
+		<properties>
+<!-- 			<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" /> -->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.hbm2ddl.auto" value="none" />
+
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
+
+			<property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup" />
+
+<!-- 			<property name="hibernate.default_schema" value="public" /> -->
+			<!-- <property name="hibernate.default_schema" value="MU2" /> -->
+
+		</properties>
+
+	</persistence-unit>
+
+</persistence>
